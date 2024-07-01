@@ -8,13 +8,14 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True)
     product_name = Column(String(100), nullable=False, unique=True)
+    brand = Column(String(100))
     product_description = Column(String(255))
-    product_brand = Column(String(100))
-    product_category = Column(String(100))
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     inventory_items = relationship('Inventory', back_populates='product')
+    category = relationship('Category', back_populates='products')
 
     __table_args__ = (
         Index('ix_product_name', 'product_name'),
