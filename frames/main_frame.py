@@ -59,7 +59,7 @@ class ProductsWindow(CenterWindowMixin):
         self.main_app = main_app
         self.window = tk.Toplevel(main_app.root)
         self.window.title("Productos")
-        self.window.geometry("1000x350")
+        self.window.geometry("1250x350")
         self.db = Session()
 
         self.product_service = ProductService(self.db)
@@ -94,24 +94,33 @@ class ProductsWindow(CenterWindowMixin):
         btn_close = ttk.Button(self.window, text="Cerrar Ventana", command=self.close_window)
         btn_close.place(x=850,y=300)
 
+        bnt_inv = ttk.Button(self.window, text="Cargar inventario", command=self.load_inventory)
+        bnt_inv.place(x=550,y=300)
+
         # tabla 
-        self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Categoria"), show="headings")
+        self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
         # Definir los encabezados de la tabla
         self.tree.heading("Id", text="Id")
         self.tree.heading("Nombre", text="Nombre")
         self.tree.heading("Descripcion", text="Descripcion")
+        self.tree.heading("Marca", text="Marca")
         self.tree.heading("Categoria", text="Categoria")
+        self.tree.heading("Cantidad", text="Cantidad")
+        self.tree.heading("Vencimiento", text="Vencimiento")
 
         # Definir el tamaño de las columnas
         self.tree.column("Id", width=50)
         self.tree.column("Nombre", width=150)
-        self.tree.column("Descripcion", width=300)
-        self.tree.column("Categoria", width=150)
+        self.tree.column("Descripcion", width=150)
+        self.tree.column("Marca", width=85)
+        self.tree.column("Categoria", width=95)
+        self.tree.column("Cantidad", width=50)
+        self.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
         self.tree.place(x=300,y=20)
 
-        self.load_products()
+        self.load_inventory()
 
         self.center_window(self.window, main_app.root)
 
@@ -119,9 +128,31 @@ class ProductsWindow(CenterWindowMixin):
         for row in self.tree.get_children():
             self.tree.delete(row)
 
-        products = self.product_service.get_products()
-        for product in products:
-            self.tree.insert("", tk.END, values=(product.id, product.product_name, product.product_description, product.category))
+        inventory_products = self.product_service.get_inventory_products()
+        for inventory_product in inventory_products:
+            self.tree.insert("", tk.END, values=(
+                inventory_product.id, 
+                inventory_product.product_name,
+                inventory_product.product_description,
+                inventory_product.product_brand, 
+                inventory_product.category_name, 
+                inventory_product.quantity, 
+                inventory_product.expiration_date))
+
+    def load_inventory(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        inventory_products = self.product_service.get_inventory_products()
+        for inventory_product in inventory_products:
+            self.tree.insert("", tk.END, values=(
+                inventory_product.id, 
+                inventory_product.product_name,
+                inventory_product.product_description,
+                inventory_product.product_brand, 
+                inventory_product.category_name, 
+                inventory_product.quantity, 
+                inventory_product.expiration_date))
 
 
     def insert_product(self):
