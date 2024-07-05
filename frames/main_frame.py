@@ -1,4 +1,5 @@
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 from frames.frame_mixin import CenterWindowMixin
 from config.database import Session
@@ -11,13 +12,20 @@ class MainApplication(CenterWindowMixin):
     def __init__(self, root):
         self.root = root
         self.root.title("Ventana Principal")
-        self.root.geometry("300x200")
+        self.root.geometry("1250x350")
 
         # Inicializar la posición de la ventana
         self.window_position = None
-
+        
+        # internal frame
+        frame = ctk.CTkFrame(self.root, fg_color="#FF99FF",width=200,height=350, corner_radius=0)
+        frame.place(x=0, y=0 )
+        frame2 = ctk.CTkFrame(self.root, fg_color="#FFCCFF",width=1050,height=350, corner_radius=0)
+        frame2.place(x=200, y=0 )
+        
+        
         # Botones en la ventana principal
-        btn_products = ttk.Button(root, text="Productos", command=self.open_products_window)
+        btn_products = ctk.CTkButton(frame, text="Productos", command=self.open_products_window,fg_color='transparent',hover_color="#FFCCFF",text_color="#990066")
         # btn_boxes = ttk.Button(root, text="Ver Cajas", command=self.open_window2)
         # btn_warehouses = ttk.Button(root, text="Ver Almacenes", command=self.open_window2)
         # btn_stock = ttk.Button(root, text="Ver Inventario", command=self.open_window2)
