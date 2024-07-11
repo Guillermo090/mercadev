@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import customtkinter as ctk
 from frames.frame_mixin import CenterWindowMixin
 from config.database import Session
 from services.product import ProductService
@@ -8,12 +9,16 @@ from schema.product import Product, Inventory
 class InventoryWindow(CenterWindowMixin):
     def __init__(self, main_app):
         self.main_app = main_app
-        self.window = tk.Toplevel(main_app.root)
+        # self.window = tk.Toplevel(main_app.root)
+        self.window = ctk.CTkToplevel(main_app.root)
         self.window.title("Productos")
-        self.window.geometry("1250x350")
+        self.window.geometry("1250x650")
         self.db = Session()
 
         self.product_service = ProductService(self.db)
+
+        frame = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
+        frame.place(x=0, y=0 )
 
         # Variables para los campos de entrada
         self.inpt_product_name = tk.StringVar()
@@ -24,47 +29,54 @@ class InventoryWindow(CenterWindowMixin):
         self.inpt_product_expiration_date = tk.StringVar()
 
         # Ingresar producto
-        lbl_product_name = ttk.Label(self.window, text="Nombre del Producto")
-        lbl_product_name.place(x=60,y=20)
-        inpt_product_name = ttk.Entry(self.window, textvariable=self.inpt_product_name)
-        inpt_product_name.place(x=60,y=40)
+        # lbl_product_name = ttk.Label(frame, text="Nombre del Producto")
+        lbl_product_name = ctk.CTkLabel(frame, text="Nombre del Producto")
+        lbl_product_name.place(x=60,y=10)
+        # inpt_product_name = ttk.Entry(frame, textvariable=self.inpt_product_name)
+        inpt_product_name = ctk.CTkEntry(frame, textvariable=self.inpt_product_name)
+        inpt_product_name.place(x=60,y=30)
 
-        lbl_product_desc = ttk.Label(self.window, text="Descripcion")
+        lbl_product_desc = ctk.CTkLabel(frame, text="Descripcion")
         lbl_product_desc.place(x=60,y=60)
-        inpt_product_desc = ttk.Entry(self.window, textvariable=self.inpt_product_desc)
+        inpt_product_desc = ctk.CTkEntry(frame, textvariable=self.inpt_product_desc)
         inpt_product_desc.place(x=60,y=80)
 
-        lbl_product_brand = ttk.Label(self.window, text="Marca")
-        lbl_product_brand.place(x=60,y=100)
-        lbl_product_brand = ttk.Entry(self.window, textvariable=self.inpt_product_brand)
-        lbl_product_brand.place(x=60,y=120)
+        lbl_product_brand = ctk.CTkLabel(frame, text="Marca")
+        lbl_product_brand.place(x=60,y=110)
+        lbl_product_brand = ctk.CTkEntry(frame, textvariable=self.inpt_product_brand)
+        lbl_product_brand.place(x=60,y=130)
 
-        lbl_product_cat = ttk.Label(self.window, text="Categoria")
-        lbl_product_cat.place(x=60,y=140)
-        inpt_product_cat = ttk.Entry(self.window, textvariable=self.inpt_product_cat)
-        inpt_product_cat.place(x=60,y=160)
+        lbl_product_cat = ctk.CTkLabel(frame, text="Categoria")
+        lbl_product_cat.place(x=60,y=160)
+        inpt_product_cat = ctk.CTkEntry(frame, textvariable=self.inpt_product_cat)
+        inpt_product_cat.place(x=60,y=180)
 
-        lbl_product_qty = ttk.Label(self.window, text="Cantidad")
-        lbl_product_qty.place(x=60,y=180)
-        inpt_product_qty = ttk.Entry(self.window, textvariable=self.inpt_product_quantity)
-        inpt_product_qty.place(x=60,y=200)
+        lbl_product_qty = ctk.CTkLabel(frame, text="Cantidad")
+        lbl_product_qty.place(x=60,y=210)
+        inpt_product_qty = ctk.CTkEntry(frame, textvariable=self.inpt_product_quantity)
+        inpt_product_qty.place(x=60,y=230)
 
-        lbl_product_expiration = ttk.Label(self.window, text="Fecha Fencimiento")
-        lbl_product_expiration.place(x=60,y=220)
-        inpt_product_expiration = ttk.Entry(self.window, textvariable=self.inpt_product_expiration_date)
-        inpt_product_expiration.place(x=60,y=240)
+        lbl_product_expiration = ctk.CTkLabel(frame, text="Fecha Fencimiento")
+        lbl_product_expiration.place(x=60,y=260)
+        inpt_product_expiration = ctk.CTkEntry(frame, textvariable=self.inpt_product_expiration_date)
+        inpt_product_expiration.place(x=60,y=280)
         
-        btn_insert = ttk.Button(self.window, text="Ingresar Producto", command=self.insert_product)
-        btn_insert.place(x=90,y=270)
+        btn_insert = ctk.CTkButton(frame, text="Ingresar", command=self.insert_product, width=65)
+        btn_insert.place(x=50,y=320)
 
-        btn_delete = ttk.Button(self.window, text="Eliminar Producto", command=self.delete_product)
-        btn_delete.place(x=90,y=300)
+        btn_delete = ctk.CTkButton(frame, text="Eliminar", command=self.delete_product, width=65)
+        btn_delete.place(x=150,y=320)
 
-        btn_close = ttk.Button(self.window, text="Cerrar Ventana", command=self.close_window)
-        btn_close.place(x=850,y=300)
+        btn_close = ttk.Button(frame, text="Cerrar Ventana", command=self.close_window)
+        btn_close.place(x=850,y=400)
 
         bnt_inv = ttk.Button(self.window, text="Cargar inventario", command=self.load_inventory)
         bnt_inv.place(x=550,y=300)
+
+        # frame_search = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
+        # frame_search.place(x=0, y=0 )
+
+
 
         # tabla 
         self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
@@ -87,7 +99,7 @@ class InventoryWindow(CenterWindowMixin):
         self.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
-        self.tree.place(x=300,y=20)
+        self.tree.place(x=300,y=160)
 
         self.load_inventory()
 
