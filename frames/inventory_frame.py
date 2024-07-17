@@ -12,13 +12,15 @@ class InventoryWindow(CenterWindowMixin):
         # self.window = tk.Toplevel(main_app.root)
         self.window = ctk.CTkToplevel(main_app.root)
         self.window.title("Productos")
-        self.window.geometry("1250x650")
+        self.window.geometry("1550x650")
         self.db = Session()
 
         self.product_service = ProductService(self.db)
 
         frame = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
         frame.place(x=0, y=0 )
+        frame2 = ctk.CTkFrame(self.window, fg_color="#FFCCFF",width=1300,height=650, corner_radius=0)
+        frame2.place(x=250, y=0 )
 
         # Variables para los campos de entrada
         self.inpt_product_name = tk.StringVar()
@@ -30,33 +32,33 @@ class InventoryWindow(CenterWindowMixin):
 
         # Ingresar producto
         # lbl_product_name = ttk.Label(frame, text="Nombre del Producto")
-        lbl_product_name = ctk.CTkLabel(frame, text="Nombre del Producto")
+        lbl_product_name = ctk.CTkLabel(frame, text="Nombre del Producto",text_color="#990066")
         lbl_product_name.place(x=60,y=10)
         # inpt_product_name = ttk.Entry(frame, textvariable=self.inpt_product_name)
         inpt_product_name = ctk.CTkEntry(frame, textvariable=self.inpt_product_name)
         inpt_product_name.place(x=60,y=30)
 
-        lbl_product_desc = ctk.CTkLabel(frame, text="Descripcion")
+        lbl_product_desc = ctk.CTkLabel(frame, text="Descripcion",text_color="#990066")
         lbl_product_desc.place(x=60,y=60)
         inpt_product_desc = ctk.CTkEntry(frame, textvariable=self.inpt_product_desc)
         inpt_product_desc.place(x=60,y=80)
 
-        lbl_product_brand = ctk.CTkLabel(frame, text="Marca")
+        lbl_product_brand = ctk.CTkLabel(frame, text="Marca",text_color="#990066")
         lbl_product_brand.place(x=60,y=110)
         lbl_product_brand = ctk.CTkEntry(frame, textvariable=self.inpt_product_brand)
         lbl_product_brand.place(x=60,y=130)
 
-        lbl_product_cat = ctk.CTkLabel(frame, text="Categoria")
+        lbl_product_cat = ctk.CTkLabel(frame, text="Categoria",text_color="#990066")
         lbl_product_cat.place(x=60,y=160)
         inpt_product_cat = ctk.CTkEntry(frame, textvariable=self.inpt_product_cat)
         inpt_product_cat.place(x=60,y=180)
 
-        lbl_product_qty = ctk.CTkLabel(frame, text="Cantidad")
+        lbl_product_qty = ctk.CTkLabel(frame, text="Cantidad",text_color="#990066")
         lbl_product_qty.place(x=60,y=210)
         inpt_product_qty = ctk.CTkEntry(frame, textvariable=self.inpt_product_quantity)
         inpt_product_qty.place(x=60,y=230)
 
-        lbl_product_expiration = ctk.CTkLabel(frame, text="Fecha Fencimiento")
+        lbl_product_expiration = ctk.CTkLabel(frame, text="Fecha Fencimiento",text_color="#990066")
         lbl_product_expiration.place(x=60,y=260)
         inpt_product_expiration = ctk.CTkEntry(frame, textvariable=self.inpt_product_expiration_date)
         inpt_product_expiration.place(x=60,y=280)
@@ -67,16 +69,14 @@ class InventoryWindow(CenterWindowMixin):
         btn_delete = ctk.CTkButton(frame, text="Eliminar", command=self.delete_product, width=65)
         btn_delete.place(x=150,y=320)
 
-        btn_close = ttk.Button(frame, text="Cerrar Ventana", command=self.close_window)
-        btn_close.place(x=850,y=400)
+        btn_close = ttk.Button(frame2, text="Cerrar Ventana", command=self.close_window)
+        btn_close.place(x=1000,y=550)
 
         bnt_inv = ttk.Button(self.window, text="Cargar inventario", command=self.load_inventory)
         bnt_inv.place(x=550,y=300)
 
         # frame_search = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
         # frame_search.place(x=0, y=0 )
-
-
 
         # tabla 
         self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
@@ -99,11 +99,32 @@ class InventoryWindow(CenterWindowMixin):
         self.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
-        self.tree.place(x=300,y=160)
+        self.tree.place(x=275,y=160, width=1250)
 
         self.load_inventory()
 
         self.center_window(self.window, main_app.root)
+
+        style = ttk.Style()
+        style.theme_use("default")
+        # Estilo general del Treeview
+        style.configure("Treeview",
+            background="#FF99FF",
+            foreground="#990066",
+            rowheight=25,
+            fieldbackground="#D3D3D3",
+            font=("Helvetica", 10)
+        )
+
+        # Estilo para el encabezado
+        style.configure("Treeview.Heading",
+                        background="#FF99FF",
+                        foreground="#990066",
+                        font=("Helvetica", 12, "bold"))
+
+        # Cambiar el color de la fila seleccionada
+        style.map("Treeview", background=[("selected", "#347083")])
+
 
     def load_products(self):
         for row in self.tree.get_children():
