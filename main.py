@@ -1,6 +1,6 @@
 import tkinter as tk
 import customtkinter as ctk
-from frames.main_frame import MainApplication
+from frames.main_frame import MainApplication, InventoryWindow
 from config.database import engine, Base
 
 if __name__ == "__main__":
@@ -8,6 +8,6 @@ if __name__ == "__main__":
     root = ctk.CTk()
     # ctk.set_appearance_mode('dark')
     # ctk.set_default_color_theme('green')
-    app = MainApplication(root)
+    app = InventoryWindow(root)
     app.center_window(root)   
     root.mainloop()

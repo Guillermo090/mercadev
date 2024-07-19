@@ -5,12 +5,13 @@ from frames.frame_mixin import CenterWindowMixin
 from config.database import Session
 from services.product import ProductService
 from schema.product import Product, Inventory
+from dataframes.report import InventoryDataFrame
 
 class InventoryWindow(CenterWindowMixin):
     def __init__(self, main_app):
         self.main_app = main_app
         # self.window = tk.Toplevel(main_app.root)
-        self.window = ctk.CTkToplevel(main_app.root)
+        self.window = self.main_app
         self.window.title("Productos")
         self.window.geometry("1550x650")
         self.db = Session()
@@ -69,11 +70,14 @@ class InventoryWindow(CenterWindowMixin):
         btn_delete = ctk.CTkButton(frame, text="Eliminar", command=self.delete_product, width=65)
         btn_delete.place(x=150,y=320)
 
-        btn_close = ttk.Button(frame2, text="Cerrar Ventana", command=self.close_window)
+        btn_close = ctk.CTkButton(frame2, text="Cerrar Ventana", command=self.close_window, width=65)
         btn_close.place(x=1000,y=550)
 
-        bnt_inv = ttk.Button(self.window, text="Cargar inventario", command=self.load_inventory)
-        bnt_inv.place(x=550,y=300)
+
+        inv_df = InventoryDataFrame(self.db)
+
+        bnt_inv = ctk.CTkButton(frame2, text="Cargar Respaldo", command=inv_df.get_inventory_products, width=65)
+        bnt_inv.place(x=750,y=550)
 
         # frame_search = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
         # frame_search.place(x=0, y=0 )
@@ -103,7 +107,7 @@ class InventoryWindow(CenterWindowMixin):
 
         self.load_inventory()
 
-        self.center_window(self.window, main_app.root)
+        # self.center_window(self.window, main_app.root)
 
         style = ttk.Style()
         style.theme_use("default")
