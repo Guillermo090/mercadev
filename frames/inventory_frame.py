@@ -11,16 +11,17 @@ class InventoryWindow(CenterWindowMixin):
     def __init__(self, main_app):
         self.main_app = main_app
         # self.window = tk.Toplevel(main_app.root)
-        self.window = self.main_app
-        self.window.title("Productos")
-        self.window.geometry("1550x650")
+        self.main_app = self.main_app
+        self.main_app.title("Productos")
+        self.main_app.geometry("1550x650")
         self.db = Session()
+
 
         self.product_service = ProductService(self.db)
 
-        frame = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
+        frame = ctk.CTkFrame(self.main_app, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
         frame.place(x=0, y=0 )
-        frame2 = ctk.CTkFrame(self.window, fg_color="#FFCCFF",width=1300,height=650, corner_radius=0)
+        frame2 = ctk.CTkFrame(self.main_app, fg_color="#FFCCFF",width=1300,height=650, corner_radius=0)
         frame2.place(x=250, y=0 )
 
         # Variables para los campos de entrada
@@ -79,11 +80,11 @@ class InventoryWindow(CenterWindowMixin):
         bnt_inv = ctk.CTkButton(frame2, text="Cargar Respaldo", command=inv_df.get_inventory_products, width=65)
         bnt_inv.place(x=750,y=550)
 
-        # frame_search = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
+        # frame_search = ctk.CTkFrame(self.main_app, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
         # frame_search.place(x=0, y=0 )
 
         # tabla 
-        self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
+        self.tree = ttk.Treeview(self.main_app, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
         # Definir los encabezados de la tabla
         self.tree.heading("Id", text="Id")
         self.tree.heading("Nombre", text="Nombre")
@@ -107,7 +108,7 @@ class InventoryWindow(CenterWindowMixin):
 
         self.load_inventory()
 
-        # self.center_window(self.window, main_app.root)
+        # self.center_window(self.main_app, main_app.root)
 
         style = ttk.Style()
         style.theme_use("default")
@@ -204,7 +205,5 @@ class InventoryWindow(CenterWindowMixin):
             self.load_inventory()
 
     def close_window(self):
-        self.window_position = self.window.geometry()
-        self.window.withdraw()
-        # self.window.destroy()
-        self.main_app.show_main()
+        self.window_position = self.main_app.geometry()
+        self.main_app.destroy()
