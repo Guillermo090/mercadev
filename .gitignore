@@ -2,3 +2,5 @@
 __pycache__/
 *.sqlite
 respaldos/
+build/
+dist/
