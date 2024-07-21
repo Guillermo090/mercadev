@@ -104,9 +104,11 @@ class InventoryWindow(CenterWindowMixin):
         inpt_product_brand_search = ctk.CTkEntry(frame_search, textvariable=self.inpt_product_brand_search)
         inpt_product_brand_search.place(x=530,y=10)
 
+        categories = [ str(cat.category_name) for cat in self.product_service.get_categories()]
+
         lbl_product_cat_search = ctk.CTkLabel(frame_search, text="Categoria",text_color="#990066")
         lbl_product_cat_search.place(x=700,y=10)
-        inpt_product_cat_search = ctk.CTkComboBox(frame_search )
+        inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=categories )
         inpt_product_cat_search.place(x=760,y=10)
 
         bnt_inv = ctk.CTkButton(frame_search, text="Buscar", width=65)

@@ -57,6 +57,9 @@ class ProductService():
             product_alias.brand.label('product_brand')
         ).join(product_alias, InventoryModel.product).join(sector_alias, InventoryModel.sector).join(category_alias, product_alias.category).all()
     
+    def get_categories(self):
+        return self.db.query(CategoryModel.category_name).all()
+
     def get_or_create_category(self, category_name):
 
         category = self.db.query(CategoryModel).filter(CategoryModel.category_name == category_name).first()
