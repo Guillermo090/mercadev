@@ -71,16 +71,45 @@ class InventoryWindow(CenterWindowMixin):
         btn_delete.place(x=150,y=320)
 
         btn_close = ctk.CTkButton(frame2, text="Cerrar Ventana", command=self.close_window, width=65)
-        btn_close.place(x=1000,y=550)
+        btn_close.place(x=1150,y=575)
 
 
         inv_df = InventoryDataFrame(self.db)
 
         bnt_inv = ctk.CTkButton(frame2, text="Cargar Respaldo", command=inv_df.get_inventory_products, width=65)
-        bnt_inv.place(x=750,y=550)
+        bnt_inv.place(x=1000,y=575)
 
-        # frame_search = ctk.CTkFrame(self.window, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
-        # frame_search.place(x=0, y=0 )
+        frame_search = ctk.CTkFrame(frame2, fg_color="#FF99FF",width=1000,height=50, corner_radius=30)
+        frame_search.place(x=150, y=25 )
+
+        # Variables para los campos de entrada
+        self.inpt_product_name_search = tk.StringVar()
+        self.inpt_product_desc_search = tk.StringVar()
+        self.inpt_product_brand_search = tk.StringVar()
+        self.inpt_product_cat_search = tk.StringVar()
+
+        lbl_product_name_search = ctk.CTkLabel(frame_search, text="Nombre",text_color="#990066")
+        lbl_product_name_search.place(x=25,y=10)
+        inpt_product_name_search = ctk.CTkEntry(frame_search, textvariable=self.inpt_product_name_search)
+        inpt_product_name_search.place(x=75 ,y=10)
+
+        lbl_product_desc_search = ctk.CTkLabel(frame_search, text="Descripcion",text_color="#990066")
+        lbl_product_desc_search.place(x=250,y=10)
+        inpt_product_desc_search = ctk.CTkEntry(frame_search, textvariable=self.inpt_product_desc_search)
+        inpt_product_desc_search.place(x=325,y=10)
+
+        lbl_product_brand_search = ctk.CTkLabel(frame_search, text="Marca",text_color="#990066")
+        lbl_product_brand_search.place(x=490,y=10)
+        inpt_product_brand_search = ctk.CTkEntry(frame_search, textvariable=self.inpt_product_brand_search)
+        inpt_product_brand_search.place(x=530,y=10)
+
+        lbl_product_cat_search = ctk.CTkLabel(frame_search, text="Categoria",text_color="#990066")
+        lbl_product_cat_search.place(x=700,y=10)
+        inpt_product_cat_search = ctk.CTkComboBox(frame_search )
+        inpt_product_cat_search.place(x=760,y=10)
+
+        bnt_inv = ctk.CTkButton(frame_search, text="Buscar", width=65)
+        bnt_inv.place(x=915,y=10)
 
         # tabla 
         self.tree = ttk.Treeview(self.window, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
@@ -103,7 +132,7 @@ class InventoryWindow(CenterWindowMixin):
         self.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
-        self.tree.place(x=275,y=160, width=1250)
+        self.tree.place(x=275,y=100, width=1250,height=450)
 
         self.load_inventory()
 
