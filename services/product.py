@@ -1,6 +1,8 @@
 from models.product import Product as ProductModel, Inventory as InventoryModel, Category as CategoryModel,  Sector as SectorModel
 from schema.product import Product, Category
 from sqlalchemy.orm import aliased
+from sqlalchemy import and_
+
 
 class ProductService():
     
@@ -56,6 +58,53 @@ class ProductService():
             product_alias.product_description.label('product_description'),
             product_alias.brand.label('product_brand')
         ).join(product_alias, InventoryModel.product).join(sector_alias, InventoryModel.sector).join(category_alias, product_alias.category).all()
+    
+    def get_inventory_with_filters(self,**kwargs):
+
+        searched_name = kwargs.get('searched_name')
+        searched_desc = kwargs.get('searched_desc')
+        searched_brand = kwargs.get('searched_brand')
+        searched_cat = kwargs.get('searched_cat')
+
+        # Alias para las tablas para facilitar la consulta
+        product_alias = aliased(ProductModel)
+        category_alias = aliased(CategoryModel)
+        sector_alias = aliased(SectorModel)
+
+        query = self.db.query(
+            InventoryModel.id,
+            InventoryModel.quantity,
+            InventoryModel.expiration_date,
+            InventoryModel.created_at,
+            sector_alias.name.label('sector_name'),
+            sector_alias.location_description.label('sector_description'),
+            category_alias.category_name.label('category_name'),
+            product_alias.product_name.label('product_name'),
+            product_alias.product_description.label('product_description'),
+            product_alias.brand.label('product_brand')
+        ).join(product_alias, InventoryModel.product).join(sector_alias, InventoryModel.sector).join(category_alias, product_alias.category)
+    
+        # Aplicar los filtros si están presentes
+        filters = []
+
+        print(searched_name)
+        print(searched_desc)
+        print(searched_brand)
+        print(searched_cat)
+
+        if searched_name:
+            filters.append(product_alias.product_name.ilike(f"%{searched_name}%"))
+        if searched_desc:
+            filters.append(product_alias.product_description.ilike(f"%{searched_desc}%"))
+        if searched_brand:
+            filters.append(product_alias.brand.ilike(f"%{searched_brand}%"))
+        if searched_cat:
+            filters.append(category_alias.category_name.ilike(f"%{searched_cat}%"))
+
+        if filters:
+            query = query.filter(and_(*filters))
+
+        return query.all()
     
     def get_categories(self):
         return self.db.query(CategoryModel.category_name).all()

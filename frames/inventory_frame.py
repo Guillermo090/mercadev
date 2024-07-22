@@ -87,7 +87,7 @@ class InventoryWindow(CenterWindowMixin):
         self.inpt_product_name_search = tk.StringVar()
         self.inpt_product_desc_search = tk.StringVar()
         self.inpt_product_brand_search = tk.StringVar()
-        self.inpt_product_cat_search = tk.StringVar()
+        self.inpt_product_cat_search_var = tk.StringVar()
 
         lbl_product_name_search = ctk.CTkLabel(frame_search, text="Nombre",text_color="#990066")
         lbl_product_name_search.place(x=25,y=10)
@@ -108,10 +108,10 @@ class InventoryWindow(CenterWindowMixin):
 
         lbl_product_cat_search = ctk.CTkLabel(frame_search, text="Categoria",text_color="#990066")
         lbl_product_cat_search.place(x=700,y=10)
-        inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=categories )
-        inpt_product_cat_search.place(x=760,y=10)
+        self.inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=categories )
+        self.inpt_product_cat_search.place(x=760,y=10)
 
-        bnt_inv = ctk.CTkButton(frame_search, text="Buscar", width=65)
+        bnt_inv = ctk.CTkButton(frame_search, text="Buscar", width=65, command=self.search_inventory)
         bnt_inv.place(x=915,y=10)
 
         # tabla 
@@ -238,3 +238,26 @@ class InventoryWindow(CenterWindowMixin):
     def close_window(self):
         self.window_position = self.main_app.geometry()
         self.main_app.destroy()
+
+    
+    def search_inventory(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        print(self.inpt_product_cat_search_var)
+
+        inventory_products = self.product_service.get_inventory_with_filters(
+            searched_name = self.inpt_product_name_search.get(),
+            searched_desc = self.inpt_product_desc_search.get(),
+            searched_brand = self.inpt_product_brand_search.get(),
+            searched_cat = self.inpt_product_cat_search.get()
+        )
+        for inventory_product in inventory_products:
+            self.tree.insert("", tk.END, values=(
+                inventory_product.id, 
+                inventory_product.product_name,
+                inventory_product.product_description,
+                inventory_product.product_brand, 
+                inventory_product.category_name, 
+                inventory_product.quantity, 
+                inventory_product.expiration_date))
