@@ -115,7 +115,7 @@ class InventoryWindow(CenterWindowMixin):
         bnt_inv.place(x=915,y=10)
 
         # tabla 
-        self.tree = ttk.Treeview(self.main_app, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
+        self.tree = ttk.Treeview(frame2, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
         # Definir los encabezados de la tabla
         self.tree.heading("Id", text="Id")
         self.tree.heading("Nombre", text="Nombre")
@@ -135,7 +135,7 @@ class InventoryWindow(CenterWindowMixin):
         self.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
-        self.tree.place(x=275,y=100, width=1250,height=450)
+        self.tree.place(x=25,y=100, width=1250,height=450)
 
         self.load_inventory()
 
