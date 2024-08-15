@@ -1,5 +1,5 @@
 from models.product import Product as ProductModel, Inventory as InventoryModel, Category as CategoryModel,  Sector as SectorModel
-from schema.product import Product, Category
+from schema.product import Product, Category, Sector
 from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 
@@ -118,6 +118,16 @@ class ProductService():
             self.db.add(category)
             self.db.commit()
         return category
+    
+    def get_or_create_sector(self, sector_name):
+
+        sector = self.db.query(SectorModel).filter(SectorModel.name == sector_name).first()
+        if not sector:
+            sector_schema = Sector(name=sector_name)
+            sector = SectorModel(**sector_schema.model_dump())
+            self.db.add(sector)
+            self.db.commit()
+        return sector
             
     def create_inventory(self, inventory):
         

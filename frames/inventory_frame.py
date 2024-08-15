@@ -6,6 +6,9 @@ from config.database import Session
 from services.product import ProductService
 from schema.product import Product, Inventory
 from dataframes.report import InventoryDataFrame
+import datetime
+
+ALL_CATEGORIES = 'todos'
 
 class InventoryWindow(CenterWindowMixin):
     def __init__(self, main_app):
@@ -104,12 +107,12 @@ class InventoryWindow(CenterWindowMixin):
         inpt_product_brand_search = ctk.CTkEntry(frame_search, textvariable=self.inpt_product_brand_search)
         inpt_product_brand_search.place(x=530,y=10)
 
-        categories = [ str(cat.category_name) for cat in self.product_service.get_categories()]
-
         lbl_product_cat_search = ctk.CTkLabel(frame_search, text="Categoria",text_color="#990066")
         lbl_product_cat_search.place(x=700,y=10)
-        self.inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=categories )
+        self.inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=[ALL_CATEGORIES])
         self.inpt_product_cat_search.place(x=760,y=10)
+
+        self.load_categories()
 
         bnt_inv = ctk.CTkButton(frame_search, text="Buscar", width=65, command=self.search_inventory)
         bnt_inv.place(x=915,y=10)
@@ -209,15 +212,19 @@ class InventoryWindow(CenterWindowMixin):
                 return 
             
             category = self.product_service.get_or_create_category(category_name)
+            sector = self.product_service.get_or_create_sector("Casa")
 
             product_schema = Product(product_name=nombre, brand=brand, category_id=category.id)
             new_product = self.product_service.create_product(product_schema)
 
-            inventory_schema = Inventory(product_id=new_product.id, quantity=int(quantity),sector_id=1,expiration_date='2021-01-01')
+            expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
+
+            inventory_schema = Inventory(product_id=new_product.id, quantity=int(quantity),sector_id=sector.id,expiration_date=expiration_date)
             self.product_service.create_inventory(inventory_schema)
 
-
             self.load_inventory()
+
+            self.load_categories()  
 
             self.inpt_product_name.set("")
             self.inpt_product_desc.set("")
@@ -234,6 +241,8 @@ class InventoryWindow(CenterWindowMixin):
             self.product_service.delete_inventory(inventory_id)
             # self.load_products()
             self.load_inventory()
+            self.load_categories()  
+
 
     def close_window(self):
         self.window_position = self.main_app.geometry()
@@ -244,14 +253,17 @@ class InventoryWindow(CenterWindowMixin):
         for row in self.tree.get_children():
             self.tree.delete(row)
 
-        print(self.inpt_product_cat_search_var)
+        searched_category = self.inpt_product_cat_search.get()
+        if searched_category == ALL_CATEGORIES:
+            searched_category = ""
 
         inventory_products = self.product_service.get_inventory_with_filters(
             searched_name = self.inpt_product_name_search.get(),
             searched_desc = self.inpt_product_desc_search.get(),
             searched_brand = self.inpt_product_brand_search.get(),
-            searched_cat = self.inpt_product_cat_search.get()
+            searched_cat = searched_category
         )
+
         for inventory_product in inventory_products:
             self.tree.insert("", tk.END, values=(
                 inventory_product.id, 
@@ -261,3 +273,9 @@ class InventoryWindow(CenterWindowMixin):
                 inventory_product.category_name, 
                 inventory_product.quantity, 
                 inventory_product.expiration_date))
+            
+    def load_categories(self):
+
+        all_categories = [ALL_CATEGORIES]
+        categories = all_categories +  [ str(cat.category_name) for cat in self.product_service.get_categories()]
+        self.inpt_product_cat_search.configure(values=categories)

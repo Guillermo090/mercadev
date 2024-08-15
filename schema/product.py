@@ -9,6 +9,14 @@ class Category(BaseModel):
     updated_at: Optional[datetime] = Field(None)
 
 
+class Sector(BaseModel):
+    id : Optional[int] = Field(None)
+    name : str = Field(..., max_length=100)
+    location_description : Optional[str] = Field(None, max_length=255)
+    created_at: Optional[datetime] = Field(None)
+    updated_at: Optional[datetime] = Field(None)
+
+
 class Product(BaseModel):
     id : Optional[int] = Field(None)
     product_name : str = Field(..., max_length=100)
