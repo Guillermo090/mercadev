@@ -1,31 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
-from frames.frame_mixin import CenterWindowMixin
+from frames.frame_mixin import CenterWindowMixin, MenuMixin
 from config.database import Session
 from services.product import ProductService
-from schema.product import Product, Inventory
 from dataframes.report import InventoryDataFrame
-import datetime
 
-ALL_CATEGORIES = 'todos'
-
-class InventoryWindow(CenterWindowMixin):
-    def __init__(self, main_app):
-        self.main_app = main_app
-        # self.window = tk.Toplevel(main_app.root)
-        self.main_app = self.main_app
-        self.main_app.title("Productos")
-        self.main_app.geometry("1550x650")
-        self.db = Session()
-
-
-        self.product_service = ProductService(self.db)
-
-        frame = ctk.CTkFrame(self.main_app, fg_color="#FF99FF",width=250,height=650, corner_radius=0)
+class MenuFrame(MenuMixin):
+    def __init__(self, parent_frame, product_service):
+        self.parent_frame = parent_frame
+        self.product_service = product_service
+        frame = ctk.CTkFrame(self.parent_frame, fg_color="#FF99FF",width=250,height=650, corner_radius=0 )
         frame.place(x=0, y=0 )
-        frame2 = ctk.CTkFrame(self.main_app, fg_color="#FFCCFF",width=1300,height=650, corner_radius=0)
-        frame2.place(x=250, y=0 )
 
         # Variables para los campos de entrada
         self.inpt_product_name = tk.StringVar()
@@ -74,9 +60,19 @@ class InventoryWindow(CenterWindowMixin):
         btn_delete = ctk.CTkButton(frame, text="Eliminar", command=self.delete_product, width=65)
         btn_delete.place(x=150,y=320)
 
+
+class PrincipalFrame(MenuMixin):
+    def __init__(self, parent_frame, product_service, db):
+
+        self.parent_frame = parent_frame
+        self.product_service = product_service
+        self.db = db
+
+        frame2 = ctk.CTkFrame(self.parent_frame, fg_color="#FFCCFF",width=1300,height=650, corner_radius=0 )
+        frame2.place(x=250, y=0 )
+
         btn_close = ctk.CTkButton(frame2, text="Cerrar Ventana", command=self.close_window, width=65)
         btn_close.place(x=1150,y=575)
-
 
         inv_df = InventoryDataFrame(self.db)
 
@@ -90,7 +86,7 @@ class InventoryWindow(CenterWindowMixin):
         self.inpt_product_name_search = tk.StringVar()
         self.inpt_product_desc_search = tk.StringVar()
         self.inpt_product_brand_search = tk.StringVar()
-        self.inpt_product_cat_search_var = tk.StringVar()
+        # self.inpt_product_cat_search_var = tk.StringVar()
 
         lbl_product_name_search = ctk.CTkLabel(frame_search, text="Nombre",text_color="#990066")
         lbl_product_name_search.place(x=25,y=10)
@@ -109,8 +105,8 @@ class InventoryWindow(CenterWindowMixin):
 
         lbl_product_cat_search = ctk.CTkLabel(frame_search, text="Categoria",text_color="#990066")
         lbl_product_cat_search.place(x=700,y=10)
-        self.inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=[ALL_CATEGORIES])
-        self.inpt_product_cat_search.place(x=760,y=10)
+        self.parent_frame.inpt_product_cat_search = ctk.CTkComboBox(frame_search, values=[MenuMixin.ALL_CATEGORIES])
+        self.parent_frame.inpt_product_cat_search.place(x=760,y=10)
 
         self.load_categories()
 
@@ -118,27 +114,27 @@ class InventoryWindow(CenterWindowMixin):
         bnt_inv.place(x=915,y=10)
 
         # tabla 
-        self.tree = ttk.Treeview(frame2, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
+        self.parent_frame.tree = ttk.Treeview(frame2, columns=("Id", "Nombre", "Descripcion","Marca","Categoria","Cantidad","Vencimiento"), show="headings")
         # Definir los encabezados de la tabla
-        self.tree.heading("Id", text="Id")
-        self.tree.heading("Nombre", text="Nombre")
-        self.tree.heading("Descripcion", text="Descripcion")
-        self.tree.heading("Marca", text="Marca")
-        self.tree.heading("Categoria", text="Categoria")
-        self.tree.heading("Cantidad", text="Cantidad")
-        self.tree.heading("Vencimiento", text="Vencimiento")
+        self.parent_frame.tree.heading("Id", text="Id")
+        self.parent_frame.tree.heading("Nombre", text="Nombre")
+        self.parent_frame.tree.heading("Descripcion", text="Descripcion")
+        self.parent_frame.tree.heading("Marca", text="Marca")
+        self.parent_frame.tree.heading("Categoria", text="Categoria")
+        self.parent_frame.tree.heading("Cantidad", text="Cantidad")
+        self.parent_frame.tree.heading("Vencimiento", text="Vencimiento")
 
         # Definir el tamaño de las columnas
-        self.tree.column("Id", width=50)
-        self.tree.column("Nombre", width=150)
-        self.tree.column("Descripcion", width=150)
-        self.tree.column("Marca", width=85)
-        self.tree.column("Categoria", width=95)
-        self.tree.column("Cantidad", width=50)
-        self.tree.column("Vencimiento", width=150)
+        self.parent_frame.tree.column("Id", width=50)
+        self.parent_frame.tree.column("Nombre", width=150)
+        self.parent_frame.tree.column("Descripcion", width=150)
+        self.parent_frame.tree.column("Marca", width=85)
+        self.parent_frame.tree.column("Categoria", width=95)
+        self.parent_frame.tree.column("Cantidad", width=50)
+        self.parent_frame.tree.column("Vencimiento", width=150)
 
         # Empaquetar el Treeview en la ventana principal
-        self.tree.place(x=25,y=100, width=1250,height=450)
+        self.parent_frame.tree.place(x=25,y=100, width=1250,height=450)
 
         self.load_inventory()
 
@@ -165,117 +161,16 @@ class InventoryWindow(CenterWindowMixin):
         style.map("Treeview", background=[("selected", "#347083")])
 
 
-    def load_products(self):
-        for row in self.tree.get_children():
-            self.tree.delete(row)
+class InventoryWindow(CenterWindowMixin):
+    def __init__(self, main_app):
+        self.main_app = main_app
+        self.main_app = self.main_app
+        self.main_app.title("Productos")
+        self.main_app.geometry("1550x650")
+        self.db = Session()
 
-        inventory_products = self.product_service.get_inventory_products()
-        for inventory_product in inventory_products:
-            self.tree.insert("", tk.END, values=(
-                inventory_product.id, 
-                inventory_product.product_name,
-                inventory_product.product_description,
-                inventory_product.product_brand, 
-                inventory_product.category_name, 
-                inventory_product.quantity, 
-                inventory_product.expiration_date))
+        self.product_service = ProductService(self.db)
 
-    def load_inventory(self):
-        for row in self.tree.get_children():
-            self.tree.delete(row)
-
-        inventory_products = self.product_service.get_inventory_products()
-        for inventory_product in inventory_products:
-            self.tree.insert("", tk.END, values=(
-                inventory_product.id, 
-                inventory_product.product_name,
-                inventory_product.product_description,
-                inventory_product.product_brand, 
-                inventory_product.category_name, 
-                inventory_product.quantity, 
-                inventory_product.expiration_date))
-
-
-    def insert_product(self):
-        nombre = self.inpt_product_name.get()
-        descripcion = self.inpt_product_desc.get()
-        brand = self.inpt_product_brand.get()
-        category_name = self.inpt_product_cat.get()
-        quantity = self.inpt_product_quantity.get()
-        expiration_date = self.inpt_product_expiration_date.get()
-
-        if nombre :
-
-            product_exist = self.product_service.get_product_by_name(nombre)
-            if product_exist:
-                print("producto ya existe")
-                return 
-            
-            category = self.product_service.get_or_create_category(category_name)
-            sector = self.product_service.get_or_create_sector("Casa")
-
-            product_schema = Product(product_name=nombre, brand=brand, category_id=category.id)
-            new_product = self.product_service.create_product(product_schema)
-
-            expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
-
-            inventory_schema = Inventory(product_id=new_product.id, quantity=int(quantity),sector_id=sector.id,expiration_date=expiration_date)
-            self.product_service.create_inventory(inventory_schema)
-
-            self.load_inventory()
-
-            self.load_categories()  
-
-            self.inpt_product_name.set("")
-            self.inpt_product_desc.set("")
-            self.inpt_product_brand.set("")
-            self.inpt_product_cat.set("")
-            self.inpt_product_quantity.set("")
-            self.inpt_product_expiration_date.set("")
-
-    def delete_product(self):
-        selected_item = self.tree.selection()
-        if selected_item:
-            inventory_id = self.tree.item(selected_item)["values"][0]
-            # self.product_service.delete_product(product_id)
-            self.product_service.delete_inventory(inventory_id)
-            # self.load_products()
-            self.load_inventory()
-            self.load_categories()  
-
-
-    def close_window(self):
-        self.window_position = self.main_app.geometry()
-        self.main_app.destroy()
-
+        self.menu_frame = MenuFrame(self.main_app, self.product_service)
+        self.principal_frame = PrincipalFrame(self.main_app, self.product_service, self.db)
     
-    def search_inventory(self):
-        for row in self.tree.get_children():
-            self.tree.delete(row)
-
-        searched_category = self.inpt_product_cat_search.get()
-        if searched_category == ALL_CATEGORIES:
-            searched_category = ""
-
-        inventory_products = self.product_service.get_inventory_with_filters(
-            searched_name = self.inpt_product_name_search.get(),
-            searched_desc = self.inpt_product_desc_search.get(),
-            searched_brand = self.inpt_product_brand_search.get(),
-            searched_cat = searched_category
-        )
-
-        for inventory_product in inventory_products:
-            self.tree.insert("", tk.END, values=(
-                inventory_product.id, 
-                inventory_product.product_name,
-                inventory_product.product_description,
-                inventory_product.product_brand, 
-                inventory_product.category_name, 
-                inventory_product.quantity, 
-                inventory_product.expiration_date))
-            
-    def load_categories(self):
-
-        all_categories = [ALL_CATEGORIES]
-        categories = all_categories +  [ str(cat.category_name) for cat in self.product_service.get_categories()]
-        self.inpt_product_cat_search.configure(values=categories)
