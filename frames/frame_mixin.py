@@ -102,7 +102,7 @@ class MenuMixin:
             category = self.product_service.get_or_create_category(category_name)
             sector = self.product_service.get_or_create_sector("Casa")
 
-            product_schema = Product(product_name=nombre, brand=brand, category_id=category.id)
+            product_schema = Product(product_name=nombre, product_description=descripcion, brand=brand, category_id=category.id)
             new_product = self.product_service.create_product(product_schema)
 
             expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)

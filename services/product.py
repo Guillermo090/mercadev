@@ -87,11 +87,6 @@ class ProductService():
         # Aplicar los filtros si están presentes
         filters = []
 
-        print(searched_name)
-        print(searched_desc)
-        print(searched_brand)
-        print(searched_cat)
-
         if searched_name:
             filters.append(product_alias.product_name.ilike(f"%{searched_name}%"))
         if searched_desc:
