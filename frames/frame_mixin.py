@@ -1,6 +1,7 @@
 from screeninfo import get_monitors
 import customtkinter as ctk
 import datetime
+from tkinter import messagebox
 from schema.product import Product, Inventory
 
 class CenterWindowMixin:
@@ -90,36 +91,67 @@ class MenuMixin:
         descripcion = self.inpt_product_desc.get()
         brand = self.inpt_product_brand.get()
         category_name = self.inpt_product_cat.get()
-        quantity = self.inpt_product_quantity.get()
-        expiration_date = self.inpt_product_expiration_date.get()
+        quantity_input = self.inpt_product_quantity.get()
+        expiration_date_input = self.inpt_product_expiration_date.get()
 
-        if nombre :
-            product_exist = self.product_service.get_product_by_name(nombre)
-            if product_exist:
-                print("producto ya existe")
-                return 
-            
-            category = self.product_service.get_or_create_category(category_name)
-            sector = self.product_service.get_or_create_sector("Casa")
+        if not nombre:
+            messagebox.showerror("Error", "El nombre del producto es obligatorio")
+            return
 
-            product_schema = Product(product_name=nombre, product_description=descripcion, brand=brand, category_id=category.id)
-            new_product = self.product_service.create_product(product_schema)
+        if not category_name:
+            messagebox.showerror("Error", "La categoria es obligatoria")
+            return
 
-            expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
+        try:
+            quantity = int(quantity_input)
+            if quantity <= 0:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Error", "La cantidad debe ser un numero entero mayor a 0")
+            return
 
-            inventory_schema = Inventory(product_id=new_product.id, quantity=int(quantity),sector_id=sector.id,expiration_date=expiration_date)
-            self.product_service.create_inventory(inventory_schema)
+        if not expiration_date_input:
+            messagebox.showerror("Error", "La fecha de vencimiento es obligatoria")
+            return
 
-            self.load_inventory()
+        expiration_date = None
+        for date_format in ("%d-%m-%Y", "%Y-%m-%d"):
+            try:
+                expiration_date = datetime.datetime.strptime(expiration_date_input, date_format).date()
+                break
+            except ValueError:
+                continue
 
-            self.load_categories()  
+        if expiration_date is None:
+            messagebox.showerror("Error", "Fecha invalida. Usa DD-MM-YYYY o YYYY-MM-DD")
+            return
 
-            self.inpt_product_name.set("")
-            self.inpt_product_desc.set("")
-            self.inpt_product_brand.set("")
-            self.inpt_product_cat.set("")
-            self.inpt_product_quantity.set("")
-            self.inpt_product_expiration_date.set("")
+        product_exist = self.product_service.get_product_by_name(nombre)
+        if product_exist:
+            messagebox.showerror("Error", "El producto ya existe")
+            return
+
+        category = self.product_service.get_or_create_category(category_name)
+        sector = self.product_service.get_or_create_sector("Casa")
+
+        product_schema = Product(product_name=nombre, product_description=descripcion, brand=brand, category_id=category.id)
+        new_product = self.product_service.create_product(product_schema)
+
+        inventory_schema = Inventory(product_id=new_product.id, quantity=quantity, sector_id=sector.id, expiration_date=expiration_date)
+        self.product_service.create_inventory(inventory_schema)
+
+        self.load_inventory()
+
+        self.load_categories()
+
+        self.inpt_product_name.set("")
+        self.inpt_product_desc.set("")
+        self.inpt_product_brand.set("")
+        self.inpt_product_cat.set("")
+        self.inpt_product_quantity.set("")
+        self.inpt_product_expiration_date.set("")
+
+        messagebox.showinfo("Exito", "Producto ingresado correctamente")
  
     def delete_product(self):
         selected_item = self.parent_frame.tree.selection()

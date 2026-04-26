@@ -136,9 +136,7 @@ class ProductService():
         
         inventory = self.db.query(InventoryModel).filter(InventoryModel.id == id).first()
         if inventory:
-            inventory_deleted = self.db.query(InventoryModel).filter(InventoryModel.id == id).delete()
-            product_id = inventory.product_id
-            self.delete_product(product_id)
+            self.db.query(InventoryModel).filter(InventoryModel.id == id).delete()
             self.db.commit()
             return True
         return False

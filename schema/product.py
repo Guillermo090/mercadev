@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 
 class Category(BaseModel):
     id : Optional[int] = Field(None)
@@ -32,6 +32,6 @@ class Inventory(BaseModel):
     product_id: int = Field(...)
     sector_id: Optional[int] = Field(None)
     quantity : Optional[int] = Field(None)
-    expiration_date : Optional[datetime] = Field(None)
+    expiration_date : Optional[date] = Field(None)
     created_at: Optional[datetime] = Field(None)
     updated_at: Optional[datetime] = Field(None)
